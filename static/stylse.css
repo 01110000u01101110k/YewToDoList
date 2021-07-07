@@ -1,0 +1,103 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+:focus,
+:active {
+  outline: none;
+}
+a:focus,
+a:active {
+  outline: none;
+}
+
+body {
+  background-color: rgb(27, 27, 27);
+  font-family: "Roboto", sans-serif;
+}
+
+header {
+  width: 100%;
+}
+
+nav {
+  width: 100%;
+  height: 20vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(36, 36, 36);
+  height: 10vh;
+  box-shadow: -15px 15px 30px #1c1c1c, 15px -15px 30px #262626;
+  text-align: center;
+}
+
+main {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  height: 70vh;
+}
+
+p {
+  font-size: 15px;
+  color: rgb(209, 209, 209);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: rgb(209, 209, 209);
+}
+.logo {
+  font-size: 25px;
+  color: rgb(209, 209, 209);
+}
+.container {
+  display: block;
+}
+
+.inputSection {
+  margin: 20px;
+}
+
+.input {
+  border: 2px solid rgb(117, 15, 201);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+}
+.btn {
+  padding: 10px;
+  margin: 10px;
+  font-size: 15px;
+  border: 5px solid rgb(54, 54, 54);
+  border-radius: 10px;
+  background-color: rgb(255, 217, 0);
+  color: rgb(54, 54, 54);
+  cursor: pointer;
+}
+
+.notesSection {
+  margin: 20px;
+}
+
+.note {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgb(209, 209, 209);
+  border: 2px solid rgb(209, 209, 209);
+  border-radius: 15px;
+  padding: 15px;
+  margin: 5px;
+}
