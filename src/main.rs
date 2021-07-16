@@ -117,10 +117,9 @@ impl Component for Model {
                                             </button>
                                             <button class="btn-delete" onclick=self.link.callback(move|_| Msg::DeleteNote(note))>{"delete"}</button>
                                         </div>
-                                        
                                     </>
                                 }
-                            }) }
+                            })}
                         </div>
                     </div>
                 </main>
