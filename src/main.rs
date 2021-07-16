@@ -1,10 +1,17 @@
 use yew::prelude::*;
+use yew::{InputData};
 use yew::services::{ConsoleService, DialogService};
+
+struct NoteData {
+    note_text: String,
+    is_done: bool
+}
 
 enum Msg {
     HandleChangeInputValue(String),
     AddNewNote,
-    MarkNoteAsDone(String)
+    DeleteNote(usize),
+    MarkNoteAsDone(usize)
 }
 
 struct Model {
@@ -12,8 +19,7 @@ struct Model {
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
     value: String,
-    notes: Vec<String>,
-    done_notes: Vec<String>,
+    notes: Vec<NoteData>,
 }
 
 impl Component for Model {
@@ -25,7 +31,6 @@ impl Component for Model {
             link,
             value: String::from(""),
             notes: vec![],
-            done_notes: vec![]
         }
     }
 
@@ -39,14 +44,22 @@ impl Component for Model {
             },
             Msg::AddNewNote => {
                 if self.value.to_string() != ""{
-                    self.notes.push(self.value.to_string());
+                    let note_data = NoteData {
+                        note_text: String::from(self.value.to_string()),
+                        is_done: false
+                    };
+                    self.notes.push(note_data);
                 } else {
                     DialogService::alert("note is empty");
                 }
                 true
             },
-            Msg::MarkNoteAsDone(value) => {
-                ConsoleService::log(&value.to_string());
+            Msg::DeleteNote(index) => {
+                self.notes.remove(index);
+                true
+            },
+            Msg::MarkNoteAsDone(index) => {
+                self.notes[index].is_done = !self.notes[index].is_done;
                 true
             }
         }
@@ -60,6 +73,14 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
+        let mut count_done_notes:usize = 0;
+
+        for note in self.notes.iter(){
+            if note.is_done{
+                count_done_notes += 1;
+            }
+        }
+
         html! {
             <>
                 <header>
@@ -79,15 +100,22 @@ impl Component for Model {
                             oninput=self.link.callback(|elem: InputData|Msg::HandleChangeInputValue(elem.value)) />
                             <button onclick=self.link.callback(|_| Msg::AddNewNote) class="btn">{"create note"}
                             </button>
-                            <p>{self.done_notes.len()}{" / "}{self.notes.len()}</p>
+                            <p>{count_done_notes}{" / "}{self.notes.len()}</p>
                         </div>
                         <div class="notesSection">
                             {for (0..self.notes.len()).into_iter().map(|note| {
                                 html! {
                                     <>
                                         <div class="note">
-                                            {self.notes[note].to_string()}
-                                            /*<input type="checkbox" onclick=self.link.callback(|_| Msg::MarkNoteAsDone(self.notes[note])) />*/
+                                            <p>{self.notes[note].note_text.to_string()}</p>
+                                            <button class={if self.notes[note].is_done {"btn-done"} else {"btn-not-done"}} onclick=self.link.callback(move|_| Msg::MarkNoteAsDone(note))>
+                                            {if self.notes[note].is_done{
+                                                "done"
+                                            } else {
+                                                "not done"
+                                            }}
+                                            </button>
+                                            <button class="btn-delete" onclick=self.link.callback(move|_| Msg::DeleteNote(note))>{"delete"}</button>
                                         </div>
                                         
                                     </>
