@@ -100,8 +100,8 @@ impl Component for Model {
                             oninput=self.link.callback(|elem: InputData|Msg::HandleChangeInputValue(elem.value)) />
                             <button onclick=self.link.callback(|_| Msg::AddNewNote) class="btn">{"create note"}
                             </button>
-                            <p>{count_done_notes}{" / "}{self.notes.len()}</p>
                         </div>
+                        <div><p>{count_done_notes}{" / "}{self.notes.len()}</p></div>
                         <div class="notesSection">
                             {for (0..self.notes.len()).into_iter().map(|note| {
                                 html! {
