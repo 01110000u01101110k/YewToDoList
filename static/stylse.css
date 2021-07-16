@@ -58,6 +58,10 @@ h5,
 h6 {
   color: rgb(209, 209, 209);
 }
+.indent-horizontal-15 {
+  margin-left: 15px;
+  margin-right: 15px;
+}
 .logo {
   font-size: 25px;
   color: rgb(209, 209, 209);

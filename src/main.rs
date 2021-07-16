@@ -107,7 +107,7 @@ impl Component for Model {
                                 html! {
                                     <>
                                         <div class="note">
-                                            <p>{self.notes[note].note_text.to_string()}</p>
+                                            <p class="indent-horizontal-15">{self.notes[note].note_text.to_string()}</p>
                                             <button class={if self.notes[note].is_done {"btn-done"} else {"btn-not-done"}} onclick=self.link.callback(move|_| Msg::MarkNoteAsDone(note))>
                                             {if self.notes[note].is_done{
                                                 "done"
