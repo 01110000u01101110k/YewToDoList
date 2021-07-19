@@ -4,14 +4,16 @@ use yew::services::{ConsoleService, DialogService};
 use web_sys::window;
 use web_sys::Storage;
 use yew::format::Json;
+use serde::{Serialize, Deserialize};
+use serde_json::{Result, Value};
 
 const NOTES_STORAGE: &str = "notes";
-
+#[derive(Serialize, Deserialize, Debug, Clone)]
 struct NoteData {
     note_text: String,
     is_done: bool
 }
-
+#[derive(Serialize, Deserialize, Debug, Clone)]
 enum Msg {
     HandleChangeInputValue(String),
     AddNewNote,
@@ -25,29 +27,27 @@ struct Model {
     link: ComponentLink<Self>,
     value: String,
     notes: Vec<NoteData>,
-    storage: String
 }
 
-fn set_local_storage_data(value: String, is_done: String) {
-    // пока придумал такой костыльный метод, заполнения local_storage (временное решение)
+fn set_local_storage_data(data: Vec<NoteData>) {
     let set_local_storage = window().unwrap().local_storage().unwrap().unwrap();
-    let note_text = String::from(value.to_string());
-    let str_for_local_storage = "{ note_text: ".to_string() + &note_text + &", is_done: " + &is_done +  &"}";
+    let str_for_local_storage = serde_json::to_string(&data).unwrap();
     set_local_storage.set_item(NOTES_STORAGE, &str_for_local_storage).unwrap();
 }
 
-fn get_data_from_local_storage() -> String {
+fn get_data_from_local_storage() -> Vec<NoteData> {
     let get_local_storage = window().unwrap().local_storage().unwrap().unwrap();
     let get_notes_from_local_storage_data = get_local_storage.get_item(NOTES_STORAGE).unwrap();
-    let mut storage: String = "".to_string();
+    let mut storage = vec![];
     match get_notes_from_local_storage_data {
         Some(data) => {
-            storage = String::from(data);
+            storage = serde_json::from_str(&data).unwrap();
         },
         None => println!("some went wrong"),
     }
     return storage;
 }
+
 
 impl Component for Model {
     type Message = Msg;
@@ -58,8 +58,7 @@ impl Component for Model {
         Self {
             link,
             value: String::from(""),
-            notes: vec![],
-            storage: storage
+            notes: storage,
         }
     }
 
@@ -79,8 +78,8 @@ impl Component for Model {
                     };
                     self.notes.push(note_data);
 
-                    set_local_storage_data(self.value.to_string(), "false".to_string());
-                    self.storage = get_data_from_local_storage();
+                    let new_notes: Vec<NoteData> = self.notes.clone();
+                    set_local_storage_data(new_notes);
                 } else {
                     DialogService::alert("note is empty");
                 }
@@ -88,10 +87,14 @@ impl Component for Model {
             },
             Msg::DeleteNote(index) => {
                 self.notes.remove(index);
+                let new_notes: Vec<NoteData> = self.notes.clone();
+                set_local_storage_data(new_notes);
                 true
             },
             Msg::MarkNoteAsDone(index) => {
                 self.notes[index].is_done = !self.notes[index].is_done;
+                let new_notes: Vec<NoteData> = self.notes.clone();
+                set_local_storage_data(new_notes);
                 true
             }
         }
@@ -157,7 +160,6 @@ impl Component for Model {
                                 }
                             })}
                         </div>
-                        <p>{"last data from local storage: "}{&self.storage}</p>
                     </div>
                 </main>
             </>
