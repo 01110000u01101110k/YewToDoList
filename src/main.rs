@@ -71,9 +71,9 @@ impl Component for Model {
                 true
             },
             Msg::AddNewNote => {
-                if self.value.to_string() != ""{
+                if self.value != ""{
                     let note_data = NoteData {
-                        note_text: String::from(self.value.to_string()),
+                        note_text: self.value.to_string(),
                         is_done: false
                     };
                     self.notes.push(note_data);
