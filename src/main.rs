@@ -1,6 +1,11 @@
 use yew::prelude::*;
 use yew::{InputData};
 use yew::services::{ConsoleService, DialogService};
+use web_sys::window;
+use web_sys::Storage;
+use yew::format::Json;
+
+const NOTES_STORAGE: &str = "notes";
 
 struct NoteData {
     note_text: String,
@@ -20,6 +25,28 @@ struct Model {
     link: ComponentLink<Self>,
     value: String,
     notes: Vec<NoteData>,
+    storage: String
+}
+
+fn set_local_storage_data(value: String, is_done: String) {
+    // пока придумал такой костыльный метод, заполнения local_storage (временное решение)
+    let set_local_storage = window().unwrap().local_storage().unwrap().unwrap();
+    let note_text = String::from(value.to_string());
+    let str_for_local_storage = "{ note_text: ".to_string() + &note_text + &", is_done: " + &is_done +  &"}";
+    set_local_storage.set_item(NOTES_STORAGE, &str_for_local_storage).unwrap();
+}
+
+fn get_data_from_local_storage() -> String {
+    let get_local_storage = window().unwrap().local_storage().unwrap().unwrap();
+    let get_notes_from_local_storage_data = get_local_storage.get_item(NOTES_STORAGE).unwrap();
+    let mut storage: String = "".to_string();
+    match get_notes_from_local_storage_data {
+        Some(data) => {
+            storage = String::from(data);
+        },
+        None => println!("some went wrong"),
+    }
+    return storage;
 }
 
 impl Component for Model {
@@ -27,10 +54,12 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let storage = get_data_from_local_storage();
         Self {
             link,
             value: String::from(""),
             notes: vec![],
+            storage: storage
         }
     }
 
@@ -49,6 +78,9 @@ impl Component for Model {
                         is_done: false
                     };
                     self.notes.push(note_data);
+
+                    set_local_storage_data(self.value.to_string(), "false".to_string());
+                    self.storage = get_data_from_local_storage();
                 } else {
                     DialogService::alert("note is empty");
                 }
@@ -125,6 +157,7 @@ impl Component for Model {
                                 }
                             })}
                         </div>
+                        <p>{"last data from local storage: "}{&self.storage}</p>
                     </div>
                 </main>
             </>
